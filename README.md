@@ -1,11 +1,11 @@
-# Klasifikasi Citra Dokumen (RVL-CDIP Subset, 16 Kelas)
+# Document Image Classification
+Kompetisi Kaggle **[Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504)**. 
 
-Proyek klasifikasi gambar dokumen hasil pindai ke dalam 16 kategori untuk kompetisi Kaggle **[Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504)**. Kategori yang digunakan meliputi advertisement, budget, email, file_folder, form, handwritten, invoice, letter, memo, news_article, presentation, questionnaire, resume, scientific_publication, scientific_report, dan specification.
+Kategori yang digunakan meliputi advertisement, budget, email, file_folder, form, handwritten, invoice, letter, memo, news_article, presentation, questionnaire, resume, scientific_publication, scientific_report, dan specification.
 
 Pendekatan yang digunakan adalah **fine-tuning Vision Transformer DiT-base** (`microsoft/dit-base`), yaitu model yang telah melalui pre-training self-supervised pada dokumen IIT-CDIP. Implementasi menggunakan PyTorch dengan preprocessing gambar grayscale berukuran 224 × 224.
 
 ## Hasil
-
 | Metrik | Nilai |
 |---|---:|
 | Akurasi validasi (10% data latih, stratified) | **86,38%** |
@@ -13,7 +13,6 @@ Pendekatan yang digunakan adalah **fine-tuning Vision Transformer DiT-base** (`m
 | Waktu training (3 epoch, GPU T4) | ~14 menit |
 
 ### Training Performance
-
 | Epoch | Train Loss | Val Loss | Val Accuracy |
 |---|---:|---:|---:|
 | 1 | 1,5217 | 0,6266 | 82,85% |
@@ -23,7 +22,6 @@ Pendekatan yang digunakan adalah **fine-tuning Vision Transformer DiT-base** (`m
 ![Kurva Training](reports/training_curves.png)
 
 ## Struktur Repository
-
 Repository disusun berdasarkan tahapan pengerjaan, mulai dari penyimpanan data, eksplorasi, training, hingga evaluasi model.
 
 ```text
@@ -71,9 +69,6 @@ Document-Image-Classification/
 |---|---|
 | `data/` | Tempat menyimpan dataset train dan test. Dataset tidak disertakan di repository karena ukurannya besar. |
 | `notebooks/` | Berisi notebook untuk setiap tahapan eksperimen. |
-| `01_eda.ipynb` | Eksplorasi data, distribusi kelas, visualisasi sampel, dan pemeriksaan kualitas gambar. |
-| `02_training.ipynb` | Preprocessing, fine-tuning model DiT-base, dan proses training. |
-| `03_evaluation.ipynb` | Evaluasi model, confusion matrix, analisis kesalahan, dan pembuatan submission. |
 | `outputs/` | Menyimpan hasil eksperimen berupa training history, confusion matrix, probabilitas prediksi, dan submission. |
 | `reports/` | Menyimpan visualisasi hasil EDA dan evaluasi untuk dokumentasi project. |
 | `scripts/` | Berisi implementasi modular Python untuk konfigurasi, preprocessing, pemodelan, training, evaluasi, prediksi, dan utilitas. |
@@ -84,24 +79,19 @@ Document-Image-Classification/
 File `.gitkeep` digunakan untuk mempertahankan folder kosong agar tetap terlihat di GitHub.
 
 ## Cara Mengunduh Dataset
-
 Dataset tidak disertakan dalam repository karena ukurannya besar.
-
 1. Buka [Kaggle Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504).
 2. Login, klik **Join Competition**, dan setujui aturan kompetisi.
 3. Unduh dataset melalui tab Data atau menggunakan Kaggle CLI.
 
 Menggunakan Kaggle CLI:
-
 ```bash
 pip install kaggle
 kaggle competitions download -c document-image-classification-sd234504
 ```
 
 4. Ekstrak dataset dan letakkan di dalam folder `data/`.
-
 Struktur dataset yang digunakan:
-
 ```text
 data/
 ├── train.csv
@@ -117,13 +107,10 @@ data/
 ```
 
 Notebook juga mendukung variasi struktur folder dataset yang disediakan oleh kompetisi.
-
 Pada Kaggle Notebook, dataset dapat langsung ditambahkan melalui **Add Input → Competition** tanpa perlu mengunduh secara manual.
 
 ## Cara Menjalankan Project
-
 ### Kaggle Notebook (Disarankan)
-
 Training dilakukan menggunakan GPU T4 pada Kaggle Notebook.
 
 1. Buat notebook baru di Kaggle.
@@ -145,25 +132,6 @@ Untuk notebook training dan evaluasi:
 
 Setelah evaluasi selesai, unduh `submission.csv` dan unggah melalui menu **Submit Predictions** pada kompetisi Kaggle.
 
-### Lokal (VS Code)
-
-Project dapat dijalankan secara lokal dengan Python dan library yang tercantum di `requirements.txt`.
-
-```bash
-git clone https://github.com/alyciazada/Document-Image-Classification.git
-
-cd Document-Image-Classification
-
-python -m venv .venv
-
-.venv\Scripts\activate
-
-pip install -r requirements.txt
-```
-
-Letakkan dataset pada folder `data/`, kemudian jalankan notebook sesuai urutan pengerjaan.
-
-GPU NVIDIA disarankan untuk mempercepat proses fine-tuning DiT-base. Training menggunakan CPU membutuhkan waktu jauh lebih lama.
 
 ## Workflow Analisis dan Pemodelan
 
@@ -237,6 +205,16 @@ Beberapa kesalahan klasifikasi yang ditemukan antara lain:
 Kesalahan tersebut kemungkinan dipengaruhi oleh kemiripan karakteristik visual, seperti penggunaan tabel, kolom isian, judul, dan teks yang padat pada beberapa kategori dokumen.
 
 ![Confusion Matrix](reports/confusion_matrix.png)
+
+### Insight dan Interpretasi Hasil Klasifikasi
+
+Berdasarkan hasil evaluasi, model menunjukkan performa yang berbeda pada setiap kategori dokumen. Kelas email memperoleh F1-score tertinggi sebesar 0,988, diikuti resume (0,954), handwritten (0,942), dan memo (0,925). Tingginya performa pada kelas tersebut mengindikasikan bahwa model mampu mengenali karakteristik visual dan struktur dokumen yang relatif khas, seperti susunan informasi pada email, struktur resume, serta pola tulisan tangan.
+
+Sebaliknya, kelas form, scientific_report, dan presentation memiliki F1-score yang lebih rendah, masing-masing sebesar 0,677, 0,721, dan 0,778. Hal ini menunjukkan bahwa model masih mengalami kesulitan dalam membedakan beberapa kategori yang memiliki kemiripan struktur visual. Contohnya, form dan invoice sama-sama dapat memuat tabel serta kolom informasi, sedangkan scientific_report dan presentation dapat memiliki susunan judul dan teks yang relatif serupa.
+
+Pola tersebut juga terlihat pada confusion matrix. Kesalahan klasifikasi terbanyak ditemukan ketika form diprediksi sebagai invoice sebanyak 20 kali, serta scientific_report diprediksi sebagai presentation sebanyak 19 kali. Selain itu, terdapat 15 kesalahan klasifikasi presentation sebagai scientific_report dan 14 kesalahan scientific_report sebagai form. Temuan ini menunjukkan bahwa kemiripan tata letak dan elemen visual antardokumen menjadi salah satu tantangan dalam proses klasifikasi.
+
+Secara keseluruhan, model DiT-base mampu mengenali kategori dokumen dengan karakteristik visual yang lebih spesifik, tetapi masih memiliki keterbatasan dalam membedakan kategori dengan struktur yang serupa. Penggunaan resolusi 224 × 224 juga berpotensi mengurangi detail teks berukuran kecil yang dapat menjadi informasi pembeda. Oleh karena itu, peningkatan resolusi gambar, pemanfaatan fitur tekstual melalui OCR, dan pengembangan strategi augmentasi dapat dipertimbangkan untuk meningkatkan performa klasifikasi.
 
 ### Keterbatasan dan Pengembangan
 
