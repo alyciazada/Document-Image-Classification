@@ -1,0 +1,17 @@
+# Dataset dan model besar: jangan di-commit
+data/*
+!data/.gitkeep
+checkpoint/*
+!checkpoint/.gitkeep
+outputs/*
+!outputs/.gitkeep
+*.npy
+*.pt
+*.pth
+*.zip
+*.tif
+
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.vscode/
