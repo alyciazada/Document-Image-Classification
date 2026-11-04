@@ -71,6 +71,7 @@ Document-Image-Classification/
 | `requirements.txt` | Daftar library Python yang dibutuhkan untuk menjalankan project. |
 | `.gitignore` | Mengatur file dan folder yang tidak perlu disertakan dalam Git. |
 | `README.md` | Dokumentasi project, metode, hasil, dan petunjuk penggunaan. |
+
 File `.gitkeep` digunakan untuk mempertahankan folder kosong agar tetap terlihat di GitHub.
 
 ## Cara Mengunduh Dataset
