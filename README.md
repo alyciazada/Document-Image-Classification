@@ -20,7 +20,7 @@ Pendekatan: **fine-tuning Vision Transformer DiT-base** (`microsoft/dit-base`, p
 | 2 | 1,0107 | 0,5139 | 86,35% |
 | 3 | 0,9284 | 0,4995 | 86,38% |
 
-![Kurva training](assets/training_curves.png)
+![Kurva training](reports/training_curves.png)
 
 ## Struktur Repository
 
@@ -114,7 +114,7 @@ Di CPU, training DiT-base sangat lambat (ratusan menit per epoch), jadi GPU sang
 - Citra berupa pindaian grayscale berorientasi potret dengan noise dan kualitas rendah. Hanya 1 file latih yang terpotong (32.768 byte) dan 0 di test; file tersebut ditangani agar training tidak berhenti.
 - Train dan test punya median ukuran file yang mirip (~100 KB), menandakan distribusi serupa.
 
-![Contoh per kelas](assets/samples_per_class.png)
+![Contoh per kelas](reports/samples_per_class.png)
 
 ### Training
 - Akurasi validasi naik dari 82,85% (epoch 1) ke 86,35% (epoch 2), lalu hampir datar di epoch 3 (86,38%). Saat learning rate turun di akhir OneCycle, peningkatan mengecil, sehingga menambah epoch dengan konfigurasi yang sama kemungkinan hanya memberi sedikit tambahan.
@@ -126,7 +126,7 @@ Di CPU, training DiT-base sangat lambat (ratusan menit per epoch), jadi GPU sang
 - **Kesalahan terbanyak:** *form* diprediksi *invoice* (20), *scientific_report* diprediksi *presentation* (19), *presentation* diprediksi *scientific_report* (15), *scientific_report* diprediksi *form* (14).
 - Penafsiran (dugaan): *form* tertukar dengan *invoice* dan *budget* karena sama-sama berisi tabel dan kolom isian; *scientific_report* dan *presentation* tertukar karena sama-sama halaman teks padat dengan struktur judul dan poin yang mirip pada resolusi rendah.
 
-![Confusion matrix](assets/confusion_matrix.png)
+![Confusion matrix](reports/confusion_matrix.png)
 
 ### Keterbatasan dan perbaikan
 - Resize ke 224x224 menghilangkan detail teks kecil, padahal beberapa kelas dibedakan oleh kata kunci. Skor test perlu dibandingkan dengan akurasi validasi 86,38% untuk menilai generalisasi.
