@@ -1,137 +1,256 @@
-# Klasifikasi Citra Dokumen (RVL-CDIP subset, 16 Kelas)
+# Klasifikasi Citra Dokumen (RVL-CDIP Subset, 16 Kelas)
 
-Proyek klasifikasi gambar dokumen hasil pindai ke 16 kategori (advertisement, budget, email, file_folder, form, handwritten, invoice, letter, memo, news_article, presentation, questionnaire, resume, scientific_publication, scientific_report, specification) untuk kompetisi Kaggle **[Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504)**. Metrik: *Categorical Accuracy*.
+Proyek klasifikasi gambar dokumen hasil pindai ke dalam 16 kategori untuk kompetisi Kaggle **[Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504)**. Kategori yang digunakan meliputi advertisement, budget, email, file_folder, form, handwritten, invoice, letter, memo, news_article, presentation, questionnaire, resume, scientific_publication, scientific_report, dan specification.
 
-Pendekatan: **fine-tuning Vision Transformer DiT-base** (`microsoft/dit-base`, pre-trained self-supervised pada dokumen IIT-CDIP) menggunakan **PyTorch**, dengan gambar di-*cache* sebagai array grayscale 224x224 agar training cepat.
+Pendekatan yang digunakan adalah **fine-tuning Vision Transformer DiT-base** (`microsoft/dit-base`), yaitu model yang telah melalui pre-training self-supervised pada dokumen IIT-CDIP. Implementasi menggunakan PyTorch dengan preprocessing gambar grayscale berukuran 224 × 224.
 
 ## Hasil
 
 | Metrik | Nilai |
-|---|---|
+|---|---:|
 | Akurasi validasi (10% data latih, stratified) | **86,38%** |
-| Macro F1 validasi | 0,864 |
+| Macro F1 validasi | **0,864** |
 | Waktu training (3 epoch, GPU T4) | ~14 menit |
-| Public score (leaderboard) | _isi setelah submit_ |
-| Private score (leaderboard) | _isi setelah kompetisi selesai_ |
 
-| Epoch | Train loss | Val loss | Val acc |
-|---|---|---|---|
+### Training Performance
+
+| Epoch | Train Loss | Val Loss | Val Accuracy |
+|---|---:|---:|---:|
 | 1 | 1,5217 | 0,6266 | 82,85% |
 | 2 | 1,0107 | 0,5139 | 86,35% |
 | 3 | 0,9284 | 0,4995 | 86,38% |
 
-![Kurva training](reports/training_curves.png)
+![Kurva Training](reports/training_curves.png)
 
 ## Struktur Repository
 
-```
-.
-├── README.md
-├── requirements.txt
-├── .gitignore               # mengabaikan data/, checkpoint/, outputs/
-├── assets/                  # gambar untuk laporan (distribusi kelas, contoh, kurva, confusion matrix)
-├── data/                    # (tidak di-commit) letakkan dataset di sini
-├── checkpoint/              # (tidak di-commit) bobot model best.pt
-├── outputs/                 # (tidak di-commit) cache, history.csv, submission.csv
+Repository disusun berdasarkan tahapan pengerjaan, mulai dari penyimpanan data, eksplorasi, training, hingga evaluasi model.
+
+```text
+Document-Image-Classification/
+│
+├── data/
+│   └── .gitkeep
+│
 ├── notebooks/
-│   ├── 01_eda.ipynb         # eksplorasi data
-│   ├── 02_training.ipynb    # training / fine-tuning
-│   └── 03_evaluation.ipynb  # evaluasi + submission
-└── src/                     # versi modular dari kode di notebook
-    ├── config.py            # path, kelas, hyperparameter
-    ├── data.py              # baca gambar, cache, Dataset, DataLoader
-    ├── model.py             # DiT-base + head 16 kelas
-    ├── train.py             # loop training (python -m src.train)
-    ├── evaluate.py          # evaluasi validasi (python -m src.evaluate)
-    ├── predict.py           # prediksi test + submission (python -m src.predict)
-    └── utils.py             # seed, confusion matrix
+│   ├── 01_eda.ipynb
+│   ├── 02_training.ipynb
+│   └── 03_evaluation.ipynb
+│
+├── outputs/
+│   ├── .gitkeep
+│   ├── confusion_matrix.png
+│   ├── history.csv
+│   ├── submission.csv
+│   └── test_probs.npy
+│
+├── reports/
+│   ├── class_distribution.png
+│   ├── confusion_matrix.png
+│   ├── samples_per_class.png
+│   └── training_curves.png
+│
+├── scripts/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── data.py
+│   ├── evaluate.py
+│   ├── model.py
+│   ├── predict.py
+│   ├── train.py
+│   └── utils.py
+│
+├── .gitignore
+├── README.md
+└── requirements.txt
 ```
 
-Notebook ditulis berdiri sendiri (fungsi inti disertakan di dalamnya) agar bisa langsung dijalankan di Kaggle. Folder `src/` berisi kode yang sama dalam bentuk modul dengan docstring, untuk dijalankan dari command line.
+### Penjelasan Folder dan File
 
-## Cara Mengunduh Data
+| Folder/File | Fungsi |
+|---|---|
+| `data/` | Tempat menyimpan dataset train dan test. Dataset tidak disertakan di repository karena ukurannya besar. |
+| `notebooks/` | Berisi notebook untuk setiap tahapan eksperimen. |
+| `01_eda.ipynb` | Eksplorasi data, distribusi kelas, visualisasi sampel, dan pemeriksaan kualitas gambar. |
+| `02_training.ipynb` | Preprocessing, fine-tuning model DiT-base, dan proses training. |
+| `03_evaluation.ipynb` | Evaluasi model, confusion matrix, analisis kesalahan, dan pembuatan submission. |
+| `outputs/` | Menyimpan hasil eksperimen berupa training history, confusion matrix, probabilitas prediksi, dan submission. |
+| `reports/` | Menyimpan visualisasi hasil EDA dan evaluasi untuk dokumentasi project. |
+| `scripts/` | Berisi implementasi modular Python untuk konfigurasi, preprocessing, pemodelan, training, evaluasi, prediksi, dan utilitas. |
+| `requirements.txt` | Daftar library Python yang dibutuhkan untuk menjalankan project. |
+| `.gitignore` | Mengatur file dan folder yang tidak perlu disertakan dalam Git. |
+| `README.md` | Dokumentasi project, metode, hasil, dan petunjuk penggunaan. |
 
-Dataset tidak disertakan di repo (ukurannya besar dan di-ignore oleh git).
+File `.gitkeep` digunakan untuk mempertahankan folder kosong agar tetap terlihat di GitHub.
 
-1. Buka halaman kompetisi, login, lalu klik **Join Competition** dan setujui aturan.
-2. Pilih salah satu:
-   - **Browser:** tab *Data* -> *Download All*, lalu ekstrak `train.zip` dan `test.zip`.
-   - **Kaggle CLI** (perlu `kaggle.json` dari *Account -> Create New API Token*):
-     ```bash
-     pip install kaggle
-     kaggle competitions download -c document-image-classification-sd234504
-     ```
-3. Letakkan ke folder `data/` sehingga strukturnya:
-   ```
-   data/
-   ├── train.csv  test.csv  sample_submission.csv
-   ├── train/train/<nama_kelas>/*.tif     (atau train/<nama_kelas>/*.tif)
-   └── test/test/test_xxxxx.tif           (atau test/test_xxxxx.tif)
-   ```
-   Kedua pola folder didukung oleh `resolve_path`.
+## Cara Mengunduh Dataset
 
-Di Kaggle Notebook, data tidak perlu diunduh: klik **Add Input -> Competition** lalu pilih kompetisi ini.
+Dataset tidak disertakan dalam repository karena ukurannya besar.
 
-## Cara Menjalankan
+1. Buka [Kaggle Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504).
+2. Login, klik **Join Competition**, dan setujui aturan kompetisi.
+3. Unduh dataset melalui tab Data atau menggunakan Kaggle CLI.
 
-### Opsi A - Kaggle Notebook (disarankan, GPU gratis)
-1. Buat notebook baru, impor `notebooks/01_eda.ipynb`, `02_training.ipynb`, dan `03_evaluation.ipynb`.
-2. Di setiap notebook: **Add Input -> Competition** -> `document-image-classification-sd234504`.
-3. Untuk notebook 02 dan 03: **Settings -> Accelerator -> GPU T4**, dan **Internet On** (mengunduh bobot DiT dari Hugging Face). Keduanya butuh verifikasi nomor telepon di akun Kaggle.
-4. Jalankan berurutan:
-   - `01_eda` (CPU cukup)
-   - `02_training` -> **Save Version -> Save & Run All** agar `best.pt` dan cache tersimpan sebagai output
-   - `03_evaluation` -> **Add Input -> Notebooks** -> pilih output notebook 02, lalu jalankan sampai selesai
-5. Unduh `submission.csv` dari panel *Output* dan kirim lewat **Submit Predictions**.
+Menggunakan Kaggle CLI:
 
-### Opsi B - Lokal (command line, butuh GPU NVIDIA)
 ```bash
-git clone <url-repo-ini> && cd <nama-repo>
-python -m venv .venv
-.venv\Scripts\activate            # Linux/Mac: source .venv/bin/activate
-pip install -r requirements.txt   # untuk GPU, pasang PyTorch CUDA dari pytorch.org
-# letakkan dataset di data/ (lihat bagian unduh data)
-
-python -m src.train      # menyimpan checkpoint/best.pt dan outputs/history.csv
-python -m src.evaluate   # laporan per kelas + outputs/confusion_matrix.png
-python -m src.predict    # menulis outputs/submission.csv
+pip install kaggle
+kaggle competitions download -c document-image-classification-sd234504
 ```
-Di CPU, training DiT-base sangat lambat (ratusan menit per epoch), jadi GPU sangat disarankan.
 
-## Workflow Analisis
+4. Ekstrak dataset dan letakkan di dalam folder `data/`.
 
-1. **EDA** (`01_eda`): struktur data, distribusi kelas, contoh visual, dan cek file terpotong.
-2. **Preprocessing:** gambar TIFF -> grayscale -> resize 224x224 -> di-cache sebagai array uint8; normalisasi mean 0,5 dan std 0,5, diulang ke 3 channel.
-3. **Pemodelan** (`02_training`): DiT-base pre-trained + head baru 16 kelas, seluruh bobot di-*fine-tune*.
-4. **Training:** AdamW (lr 3e-5, weight decay 0,05), OneCycleLR, label smoothing 0,1, mixed precision, augmentasi geser acak kecil, 3 epoch, batch 32. Validasi stratified 90:10 (seed 42), bobot terbaik disimpan.
-5. **Evaluasi** (`03_evaluation`): akurasi, laporan per kelas, confusion matrix, dan analisis kesalahan.
-6. **Inferensi:** prediksi `argmax` pada test set -> `submission.csv` (format `id,label`).
+Struktur dataset yang digunakan:
 
-## Laporan Interpretasi
+```text
+data/
+├── train.csv
+├── test.csv
+├── sample_submission.csv
+├── train/
+│   └── train/
+│       └── <nama_kelas>/
+│           └── *.tif
+└── test/
+    └── test/
+        └── test_xxxxx.tif
+```
 
-### Data (EDA)
-- 32.003 gambar latih dan 7.994 gambar uji. Kelas **sangat seimbang** (1.948 - 2.056 per kelas), sehingga tidak perlu *class weighting* dan akurasi cukup adil sebagai metrik.
-- Citra berupa pindaian grayscale berorientasi potret dengan noise dan kualitas rendah. Hanya 1 file latih yang terpotong (32.768 byte) dan 0 di test; file tersebut ditangani agar training tidak berhenti.
-- Train dan test punya median ukuran file yang mirip (~100 KB), menandakan distribusi serupa.
+Notebook juga mendukung variasi struktur folder dataset yang disediakan oleh kompetisi.
 
-![Contoh per kelas](reports/samples_per_class.png)
+Pada Kaggle Notebook, dataset dapat langsung ditambahkan melalui **Add Input → Competition** tanpa perlu mengunduh secara manual.
+
+## Cara Menjalankan Project
+
+### Kaggle Notebook (Disarankan)
+
+Training dilakukan menggunakan GPU T4 pada Kaggle Notebook.
+
+1. Buat notebook baru di Kaggle.
+2. Tambahkan dataset melalui **Add Input → Competition**.
+3. Impor notebook dari folder `notebooks/`.
+4. Jalankan notebook sesuai urutan berikut:
+
+| Notebook | Tahapan |
+|---|---|
+| `01_eda.ipynb` | Eksplorasi dan visualisasi data |
+| `02_training.ipynb` | Preprocessing dan training model |
+| `03_evaluation.ipynb` | Evaluasi dan pembuatan submission |
+
+Untuk notebook training dan evaluasi:
+- Atur accelerator ke GPU T4.
+- Aktifkan Internet untuk mengunduh pre-trained weights dari Hugging Face.
+- Jalankan training hingga selesai dan simpan hasil melalui Save Version.
+- Gunakan output training sebagai input untuk notebook evaluasi.
+
+Setelah evaluasi selesai, unduh `submission.csv` dan unggah melalui menu **Submit Predictions** pada kompetisi Kaggle.
+
+### Lokal (VS Code)
+
+Project dapat dijalankan secara lokal dengan Python dan library yang tercantum di `requirements.txt`.
+
+```bash
+git clone https://github.com/alyciazada/Document-Image-Classification.git
+
+cd Document-Image-Classification
+
+python -m venv .venv
+
+.venv\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+Letakkan dataset pada folder `data/`, kemudian jalankan notebook sesuai urutan pengerjaan.
+
+GPU NVIDIA disarankan untuk mempercepat proses fine-tuning DiT-base. Training menggunakan CPU membutuhkan waktu jauh lebih lama.
+
+## Workflow Analisis dan Pemodelan
+
+1. **Exploratory Data Analysis (EDA)**
+
+   Memeriksa struktur dataset, distribusi kelas, contoh citra, serta kualitas file gambar.
+
+2. **Preprocessing**
+
+   Gambar TIFF dikonversi menjadi grayscale, diubah ukurannya menjadi 224 × 224, kemudian disimpan dalam bentuk array uint8 untuk mempercepat proses training. Selanjutnya dilakukan normalisasi dengan mean 0,5 dan standard deviation 0,5, serta konversi ke 3 channel.
+
+3. **Pemodelan**
+
+   Menggunakan Vision Transformer DiT-base pre-trained dengan classification head baru untuk memprediksi 16 kelas dokumen.
+
+4. **Training**
+
+   Fine-tuning dilakukan menggunakan AdamW dengan learning rate 3e-5, weight decay 0,05, OneCycleLR, label smoothing 0,1, mixed precision, dan augmentasi berupa pergeseran acak kecil.
+
+   Training berlangsung selama 3 epoch dengan batch size 32. Pembagian data validasi menggunakan stratified split 90:10 dengan seed 42.
+
+5. **Evaluasi**
+
+   Model dievaluasi menggunakan accuracy, macro F1-score, classification report, dan confusion matrix.
+
+6. **Prediksi**
+
+   Model menghasilkan prediksi pada test set menggunakan argmax dari probabilitas kelas. Hasilnya disimpan dalam format `submission.csv` dengan kolom `id` dan `label`.
+
+## Hasil dan Interpretasi
+
+### Exploratory Data Analysis
+
+- Dataset terdiri dari 32.003 gambar latih dan 7.994 gambar uji.
+- Distribusi kelas relatif seimbang, dengan jumlah sekitar 1.948–2.056 gambar per kelas.
+- Citra berupa dokumen hasil pindai grayscale dengan orientasi potret, noise, dan kualitas gambar yang bervariasi.
+- Terdapat satu file gambar latih yang terpotong dan tidak ditemukan file serupa pada data test.
+
+![Distribusi Kelas](reports/class_distribution.png)
+
+![Contoh Gambar per Kelas](reports/samples_per_class.png)
 
 ### Training
-- Akurasi validasi naik dari 82,85% (epoch 1) ke 86,35% (epoch 2), lalu hampir datar di epoch 3 (86,38%). Saat learning rate turun di akhir OneCycle, peningkatan mengecil, sehingga menambah epoch dengan konfigurasi yang sama kemungkinan hanya memberi sedikit tambahan.
-- Tidak ada tanda overfitting: val loss terus turun (0,63 -> 0,50). Train loss lebih tinggi dari val loss karena dihitung saat training dengan label smoothing dan augmentasi, serta dirata-rata ketika bobot masih berubah.
 
-### Evaluasi per kelas
-- **Terbaik (F1):** *email* 0,988, *resume* 0,954, *handwritten* 0,942, *memo* 0,925. Kelas ini punya ciri visual khas (kepala surel, struktur CV, tulisan tangan, judul MEMORANDUM).
-- **Terlemah (F1):** *form* 0,677, *scientific_report* 0,721, *presentation* 0,778.
-- **Kesalahan terbanyak:** *form* diprediksi *invoice* (20), *scientific_report* diprediksi *presentation* (19), *presentation* diprediksi *scientific_report* (15), *scientific_report* diprediksi *form* (14).
-- Penafsiran (dugaan): *form* tertukar dengan *invoice* dan *budget* karena sama-sama berisi tabel dan kolom isian; *scientific_report* dan *presentation* tertukar karena sama-sama halaman teks padat dengan struktur judul dan poin yang mirip pada resolusi rendah.
+Akurasi validasi meningkat dari 82,85% pada epoch pertama menjadi 86,35% pada epoch kedua, kemudian mencapai 86,38% pada epoch ketiga.
 
-![Confusion matrix](reports/confusion_matrix.png)
+Validation loss juga mengalami penurunan dari 0,6266 menjadi 0,4995. Hasil ini menunjukkan bahwa model mengalami peningkatan performa selama proses training tanpa indikasi overfitting yang jelas berdasarkan metrik validasi tersebut.
 
-### Keterbatasan dan perbaikan
-- Resize ke 224x224 menghilangkan detail teks kecil, padahal beberapa kelas dibedakan oleh kata kunci. Skor test perlu dibandingkan dengan akurasi validasi 86,38% untuk menilai generalisasi.
-- Ide lanjutan: resolusi lebih tinggi, test-time augmentation, ensemble model, dan fitur teks dari OCR.
+### Evaluasi per Kelas
+
+Berdasarkan classification report, beberapa kelas dengan performa terbaik berdasarkan F1-score adalah:
+
+- `email`: 0,988
+- `resume`: 0,954
+- `handwritten`: 0,942
+- `memo`: 0,925
+
+Sementara itu, kelas dengan performa yang relatif lebih rendah adalah:
+
+- `form`: 0,677
+- `scientific_report`: 0,721
+- `presentation`: 0,778
+
+Beberapa kesalahan klasifikasi yang ditemukan antara lain:
+
+- `form` diprediksi sebagai `invoice` sebanyak 20 kali.
+- `scientific_report` diprediksi sebagai `presentation` sebanyak 19 kali.
+- `presentation` diprediksi sebagai `scientific_report` sebanyak 15 kali.
+- `scientific_report` diprediksi sebagai `form` sebanyak 14 kali.
+
+Kesalahan tersebut kemungkinan dipengaruhi oleh kemiripan karakteristik visual, seperti penggunaan tabel, kolom isian, judul, dan teks yang padat pada beberapa kategori dokumen.
+
+![Confusion Matrix](reports/confusion_matrix.png)
+
+### Keterbatasan dan Pengembangan
+
+Penggunaan resolusi 224 × 224 dapat menghilangkan sebagian detail teks berukuran kecil yang mungkin penting untuk membedakan kategori dokumen.
+
+Beberapa pengembangan yang dapat dilakukan selanjutnya meliputi:
+- Menggunakan resolusi gambar yang lebih tinggi.
+- Menerapkan test-time augmentation.
+- Menggunakan ensemble model.
+- Menggabungkan fitur visual dengan fitur teks melalui OCR.
 
 ## Referensi
-- Harley et al., *Evaluation of Deep Convolutional Nets for Document Image Classification* (RVL-CDIP), 2015.
-- Li et al., *DiT: Self-supervised Pre-training for Document Image Transformer*, 2022.
+
+- Harley et al. (2015). *Evaluation of Deep Convolutional Nets for Document Image Classification (RVL-CDIP).*
+- Li et al. (2022). *DiT: Self-supervised Pre-training for Document Image Transformer.*
+- [Hugging Face - microsoft/dit-base](https://huggingface.co/microsoft/dit-base)
+- [Kaggle - Document Image Classification](https://www.kaggle.com/competitions/document-image-classification-sd234504)
