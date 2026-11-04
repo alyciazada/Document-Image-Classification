@@ -8,7 +8,6 @@ Pendekatan yang digunakan adalah **fine-tuning Vision Transformer DiT-base** (`m
 |---|---:|
 | Akurasi validasi (10% data latih, stratified) | **86,38%** |
 | Macro F1 validasi | **0,864** |
-| Waktu training (3 epoch, GPU T4) | ~14 menit |
 
 ### Training Performance
 | Epoch | Train Loss | Val Loss | Val Accuracy |
